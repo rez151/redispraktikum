@@ -24,7 +24,7 @@ public class JedisClient {
         pipeline = jedis.pipelined();
     }
 
-    private void readSampleData(String filePath) {
+    public void readSampleData(String filePath) {
         String thisline;
 
         try {
@@ -50,16 +50,16 @@ public class JedisClient {
 
     public Map<Date, Integer> query(String word, Date from, Date to) {
 
+        //Hashmap with Date and frequency of matching words
         Map<Date, Integer> result = new HashMap<Date, Integer>();
-        double begin = from.getTime();
-        double end = to.getTime();
 
-
-        Response<Set<String>> sose = pipeline.zrangeByScore("woerter", (long) begin, (long) end);
+        //execute query
+        Response<Set<String>> sose = pipeline.zrangeByScore("woerter", from.getTime(), to.getTime());
         pipeline.sync();
 
         Set<String> resp = sose.get();
 
+        //create words with results
         Word currentLine;
         for(String line : resp){
             currentLine = new Word(line);
@@ -67,37 +67,6 @@ public class JedisClient {
                 result.put(currentLine.getTimestampreal(), Integer.parseInt(currentLine.getFrequency()));
             }
         }
-
         return result;
-    }
-
-    public static void main(String[] args) {
-        //Set format for Dates
-        DateFormat dfmt = new SimpleDateFormat( "dd.MM.yy hh:mm:ss");
-
-        //Create jedis instance and connect to redis server
-        JedisClient jedisClient = new JedisClient("192.168.162.130", 6379);
-
-        //File with Sample Data (word frequency timestamp)
-        jedisClient.readSampleData("/home/reserchr/IdeaProjects/redispraktikum/src/main/java/words.txt");
-
-        //Searchparameters
-        String searchword = "amendment";
-        Date eins = new Date(Long.parseLong("0000000000000"));
-        Date zwei = new Date(Long.parseLong("0000000000000"));
-
-        //execute query
-        Map<Date, Integer> sum = jedisClient.query(searchword, eins, zwei);
-
-        //calc wordfrequency
-        int wordSum = 0;
-        for(Map.Entry<Date, Integer> entry : sum.entrySet()){
-            wordSum += entry.getValue();
-        }
-
-        System.out.println("word " + searchword + " appears " + wordSum + " times between " + dfmt.format(eins) + " " +
-                "and " + dfmt.format(zwei));
-
-
     }
 }
