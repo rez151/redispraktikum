@@ -44,7 +44,7 @@ public class JedisClient {
     private void writeToJedis(String wordline) {
         Word currentWord = new Word(wordline);
         pipeline.zadd(currentWord.getWord(), 0,
-                currentWord.getTimestamp() + ":" + currentWord.getFrequency() + ":" + index++);
+                currentWord.getTimestamp() + ":" + currentWord.getFrequency());
     }
 
     public Map<Date, Integer> query(String word, Date from, Date to) {
