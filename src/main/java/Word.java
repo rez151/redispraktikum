@@ -17,6 +17,14 @@ public class Word {
         this.timestamp = Double.parseDouble(lineElements[2]);
     }
 
+    public Word(String word, String line) {
+        this.line = line;
+        String[] lineElements = line.split(":");
+        this.word = word;
+        this.frequency = lineElements[1];
+        this.timestamp = Double.parseDouble(lineElements[0]);
+    }
+
     public String getWord() {
         return word;
     }

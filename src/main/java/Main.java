@@ -19,9 +19,9 @@ public class Main {
         jedisClient.readSampleData("/home/reserchr/IdeaProjects/redispraktikum/src/main/java/words.txt");
 
         //Searchparameters
-        String searchword = "pretty";
+        String searchword = "hello";
         Date eins = new Date(Long.parseLong("0000000000000"));
-        Date zwei = new Date(Long.parseLong("1423072919000"));
+        Date zwei = new Date(Long.parseLong("1436297602000"));
 
 
         //execute query

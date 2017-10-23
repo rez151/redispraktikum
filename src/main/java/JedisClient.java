@@ -25,6 +25,8 @@ public class JedisClient {
 
     public void readSampleData(String filePath) {
 
+        pipeline.flushAll();
+
         String thisline;
         try {
             BufferedReader in = new BufferedReader(new FileReader(filePath));
@@ -41,9 +43,8 @@ public class JedisClient {
 
     private void writeToJedis(String wordline) {
         Word currentWord = new Word(wordline);
-        pipeline.zadd(currentWord.getWord(), currentWord.getTimestamp(),
-                currentWord.getLine());
-
+        pipeline.zadd(currentWord.getWord(), 0,
+                currentWord.getTimestamp() + ":" + currentWord.getFrequency() + ":" + index++);
     }
 
     public Map<Date, Integer> query(String word, Date from, Date to) {
@@ -52,7 +53,8 @@ public class JedisClient {
         Map<Date, Integer> result = new HashMap<Date, Integer>();
 
         //execute query
-        Response<Set<String>> sose = pipeline.zrangeByScore(word, from.getTime(), to.getTime());
+        Response<Set<String>> sose = pipeline.zrangeByLex(word, "[" + String.valueOf(from.getTime()),
+                "[" + String.valueOf(to.getTime()));
         pipeline.sync();
 
         Set<String> resp = sose.get();
@@ -60,7 +62,7 @@ public class JedisClient {
         //create words with results
         Word currentLine;
         for (String line : resp) {
-            currentLine = new Word(line);
+            currentLine = new Word(word, line);
             result.put(new Date((long) currentLine.getTimestamp()), Integer.parseInt(currentLine.getFrequency()));
         }
         return result;
