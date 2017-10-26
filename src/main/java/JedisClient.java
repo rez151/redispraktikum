@@ -1,11 +1,11 @@
+import de.siegmar.fastcsv.reader.CsvReader;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -25,9 +25,24 @@ public class JedisClient {
 
     public void readSampleData(String filePath) {
 
+        List<String> lines = new ArrayList<String>();
+
+        Reader in = null;
+        try {
+            in = new FileReader(filePath);
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(in);
+            for (CSVRecord record : records) {
+                lines.add(record.get(0));
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         pipeline.flushAll();
 
-        String thisline;
+        /*String thisline;
         try {
             BufferedReader in = new BufferedReader(new FileReader(filePath));
             while ((thisline = in.readLine()) != null) {
@@ -38,7 +53,7 @@ public class JedisClient {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private void writeToJedis(String wordline) {
