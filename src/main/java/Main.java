@@ -25,7 +25,7 @@ public class Main {
         //Searchparameters
         String searchword = "hello";
         Date eins = new Date(Word.toDay("0000000000000"));
-        Date zwei = new Date(Word.toDay("1436297602000"));
+        Date zwei = new Date(Word.toDay("1440398602000"));
 
 
         //execute query

@@ -18,14 +18,13 @@ public class Word {
 
     public static long toDay(String timestamp) {
 
-        while (timestamp.length() < 13){
-            timestamp += "0";
-        }
-        timestamp = timestamp.substring(0, 13);
+        StringBuilder timestampBuilder = new StringBuilder(timestamp);
+        while (timestampBuilder.length() < 13) timestampBuilder.append("0");
+        timestamp = timestampBuilder.toString();
+        //timestamp = timestamp.substring(0, 13);
 
         long ts = Long.parseLong(timestamp);
-        long newts = ts - ts % 86400000;
-        return newts;
+        return ts - ts % 86400000;
     }
 
     public Word(String word, String line) {
