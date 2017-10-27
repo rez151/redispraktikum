@@ -1,68 +1,27 @@
 /**
  * Created by reserchr on 09.10.17.
  */
-public class Word {
-    private String line;
+class Word {
     private String word;
     private int frequency;
     private long timestamp;
 
-    public Word(String line) {
-        this.line = line;
-        String[] lineElements = line.split("  ");
+    Word(String line) {
+        String[] lineElements = line.split(" {2}");
         this.word = lineElements[0];
         this.frequency = Integer.parseInt(lineElements[1]);
-        this.timestamp = toDay(lineElements[2]);
+        this.timestamp = Util.toDay(lineElements[2]);
     }
 
-    public static long toDay(String timestamp) {
-
-        StringBuilder timestampBuilder = new StringBuilder(timestamp);
-        while (timestampBuilder.length() < 13) timestampBuilder.append("0");
-        timestamp = timestampBuilder.toString();
-        //timestamp = timestamp.substring(0, 13);
-
-        long ts = Long.parseLong(timestamp);
-        return ts - ts % 86400000;
-    }
-
-    public Word(String word, String line) {
-        this.line = line;
-        String[] lineElements = line.split(":");
-        this.word = word;
-        this.frequency = Integer.parseInt(lineElements[1]);
-        this.timestamp = Long.parseLong(lineElements[0]);
-    }
-
-    public String getWord() {
+    String getWord() {
         return word;
     }
 
-    public void setWord(String word) {
-        this.word = word;
-    }
-
-    public int getFrequency() {
+    int getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(int frequency) {
-        this.frequency = frequency;
-    }
-
-    public long getTimestamp() {
+    long getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getLine() {
-        return line;
-    }
-
-    public void setLine(String line) {
-        this.line = line;
     }
 }

@@ -13,17 +13,17 @@ import java.util.*;
  * Created by reserchr on 09.10.17.
  */
 
-public class JedisClient {
+class JedisClient {
 
     private Jedis jedis;
     private Pipeline pipeline;
 
-    public JedisClient(String ip, int port) {
+    JedisClient(String ip, int port) {
         jedis = new Jedis(ip, port);
         pipeline = jedis.pipelined();
     }
 
-    public void readSampleData(String filePath) {
+    void readSampleData(String filePath) {
 
         List<String> lines = new ArrayList<String>();
 
@@ -64,7 +64,7 @@ public class JedisClient {
         }
     }
 
-    public Map<Date, Integer> query(String word, Date from, Date to) {
+    Map<Date, Integer> query(String word, Date from, Date to) {
 
         //execute query
         String[] timestamps = jedis.zrangeByLex
