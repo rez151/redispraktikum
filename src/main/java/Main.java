@@ -9,10 +9,12 @@ import java.util.Map;
  * Created by reserchr on 10.10.17.
  */
 public class Main {
+
+
     public static void main(String[] args) {
 
         //Set format for Dates
-        DateFormat dfmt = new SimpleDateFormat( "dd.MM.yy hh:mm:ss");
+        DateFormat dfmt = new SimpleDateFormat("dd.MM.yy");
 
         //Create jedis instance and connect to redis server
         JedisClient jedisClient = new JedisClient("192.168.162.130", 6379);
@@ -22,8 +24,8 @@ public class Main {
 
         //Searchparameters
         String searchword = "hello";
-        Date eins = new Date(Long.parseLong("0000000000000"));
-        Date zwei = new Date(Long.parseLong("1436297602000"));
+        Date eins = new Date(Word.toDay("0000000000000"));
+        Date zwei = new Date(Word.toDay("1436297602000"));
 
 
         //execute query
@@ -32,10 +34,9 @@ public class Main {
         long timeEnd = System.nanoTime();
         long nanos = timeEnd - timeBegin;
 
-        //calc wordfrequency
         int wordSum = 0;
-        for(Map.Entry<Date, Integer> entry : sum.entrySet()){
-            wordSum += entry.getValue();
+        for (int i : sum.values()) {
+            wordSum += i;
         }
 
         // print Result
@@ -44,5 +45,9 @@ public class Main {
 
         System.out.println("time: " + nanos + " nanoseconds");
 
+        for (Map.Entry entry : sum.entrySet()) {
+            System.out.println("Time: " + dfmt.format(entry.getKey())
+                    + "  Frequency: " + entry.getValue());
+        }
     }
 }

@@ -16,7 +16,6 @@ public class JedisClient {
 
     private Jedis jedis;
     private Pipeline pipeline;
-    private static int index;
 
     public JedisClient(String ip, int port) {
         jedis = new Jedis(ip, port);
@@ -27,7 +26,7 @@ public class JedisClient {
 
         List<String> lines = new ArrayList<String>();
 
-        Reader in = null;
+        Reader in;
         try {
             in = new FileReader(filePath);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(in);
@@ -41,44 +40,45 @@ public class JedisClient {
         }
 
         pipeline.flushAll();
+        writeToJedis(lines);
+        pipeline.multi();
+        pipeline.sync();
+        pipeline.exec();
 
-        /*String thisline;
         try {
-            BufferedReader in = new BufferedReader(new FileReader(filePath));
-            while ((thisline = in.readLine()) != null) {
-                writeToJedis(thisline);
-            }
-            pipeline.sync();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            pipeline.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
+
+
     }
 
-    private void writeToJedis(String wordline) {
-        Word currentWord = new Word(wordline);
-        pipeline.zadd(currentWord.getWord(), 0,
-                currentWord.getTimestamp() + ":" + currentWord.getFrequency());
+    private void writeToJedis(List<String> wordlines) {
+
+        for (String line : wordlines) {
+            Word currentWord = new Word(line);
+            pipeline.zadd("z:" + currentWord.getWord(), 0, String.valueOf(currentWord.getTimestamp()));
+            pipeline.hincrBy("h:" + currentWord.getWord(), String.valueOf(currentWord.getTimestamp()), currentWord.getFrequency());
+        }
     }
 
     public Map<Date, Integer> query(String word, Date from, Date to) {
 
+        //execute query
+        String[] timestamps = jedis.zrangeByLex
+                ("z:" + word,
+                        "[" + String.valueOf(from.getTime()),
+                        "[" + String.valueOf(to.getTime())
+                ).toArray(new String[0]);
+        String[] frequencies = jedis.hmget("h:" + word, timestamps).toArray(new String[0]);
+        pipeline.sync();
+
         //Hashmap with Date and frequency of matching words
         Map<Date, Integer> result = new HashMap<Date, Integer>();
 
-        //execute query
-        Response<Set<String>> sose = pipeline.zrangeByLex(word, "[" + String.valueOf(from.getTime()),
-                "[" + String.valueOf(to.getTime()));
-        pipeline.sync();
-
-        Set<String> resp = sose.get();
-
-        //create words with results
-        Word currentLine;
-        for (String line : resp) {
-            currentLine = new Word(word, line);
-            result.put(new Date((long) currentLine.getTimestamp()), Integer.parseInt(currentLine.getFrequency()));
+        for (int i = 0; i < timestamps.length; i++) {
+            result.put(new Date(Long.parseLong(timestamps[i])), Integer.parseInt(frequencies[i]));
         }
         return result;
     }
