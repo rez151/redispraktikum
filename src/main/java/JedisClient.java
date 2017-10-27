@@ -26,7 +26,6 @@ class JedisClient {
     void readSampleData(String filePath) {
 
         List<String> lines = new ArrayList<String>();
-
         Reader in;
         try {
             in = new FileReader(filePath);
@@ -51,8 +50,6 @@ class JedisClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private void writeToJedis(List<String> wordlines) {

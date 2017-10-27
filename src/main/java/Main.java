@@ -8,7 +8,6 @@ import java.util.Map;
  */
 public class Main {
 
-
     public static void main(String[] args) {
 
         //Set format for Dates
@@ -24,7 +23,6 @@ public class Main {
         String searchword = "hello";
         Date eins = new Date(Util.toDay("0000000000000"));
         Date zwei = new Date(Util.toDay("1440398602000"));
-
 
         //execute query
         long timeBegin = System.nanoTime();
